@@ -9,11 +9,6 @@
 		var lastChunkEndedWithCR
 		var decoder = new TextDecoder
 		var encoder = new TextEncoder
-
-		if(!encode) {
-			// identity
-			encode = a => a
-		}
 		
 		function pushBuffer(keep, done, enqueue){
 			// always buffer the last (possibly partial) line
