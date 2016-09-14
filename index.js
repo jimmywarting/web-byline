@@ -5,9 +5,9 @@
 })('byLine', () => () => {
 	
 	const lineBuffer = []
-	const lastChunkEndedWithCR
 	const decoder = new TextDecoder
 	const encoder = new TextEncoder
+	let lastChunkEndedWithCR
 	
 	function pushBuffer(keep, done, enqueue){
 		// always buffer the last (possibly partial) line
