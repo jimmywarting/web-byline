@@ -48,7 +48,7 @@
 			},
 			flush(enqueue, close) {
 				// finish the stream
-				lineBuffer[lineBuffer.length] += decode()
+				lineBuffer[lineBuffer.length-1] += decode()
 				pushBuffer(0, close, enqueue)
 			}
 		})
