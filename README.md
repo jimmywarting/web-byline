@@ -16,6 +16,19 @@ The `byline` module can be used as a function to quickly pipe throught a readabl
     .pipeTo(ws)
 ```
 
+To read a large CSV from a file (or input) for example you can include [Screw-FileReader](https://www.npmjs.org/search?q=screw-filereader) to turn a blob into a stream 
+
+Example here: https://jsfiddle.net/gp802r79/
+```javascript
+file = new File([content], 'large data.csv')
+stdout = new WritableStream({ write: console.log }
+
+file
+  .stream()
+  .pipeThrough(byLine())
+  .pipeTo(stdout)
+```
+
 # Empty Lines
 
 byline skips empty lines
