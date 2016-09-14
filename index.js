@@ -4,9 +4,11 @@
 	global[name] = definition()
 })('byLine', () => {
 
-	return (decode, encode) => {
+	return () => {
 		var lineBuffer = []
 		var lastChunkEndedWithCR
+		var decoder = new TextDecoder
+		var encoder = new TextEncoder
 
 		if(!encode) {
 			// identity
@@ -19,7 +21,7 @@
 				var line = lineBuffer.shift()
 				// skip empty lines
 				if (line.length > 0 )
-					enqueue(encode(line))
+					enqueue(encoder.encode(line))
 			}
 			done()
 		}
@@ -27,7 +29,7 @@
 		return new TransformStream({
 			start(){},
 			transform(chunk, done, enqueue) {
-				chunk = decode(chunk, {stream:true})
+				chunk = decoder.decode(chunk, {stream:true})
 
 				// see: http://www.unicode.org/reports/tr18/#Line_Boundaries
 				var lines = chunk.split(/\r\n|[\n\v\f\r\x85\u2028\u2029]/g)
@@ -48,7 +50,7 @@
 			},
 			flush(enqueue, close) {
 				// finish the stream
-				lineBuffer[lineBuffer.length-1] += decode()
+				lineBuffer[lineBuffer.length-1] += decoder.decode()
 				pushBuffer(0, close, enqueue)
 			}
 		})
