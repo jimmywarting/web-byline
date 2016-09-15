@@ -1,6 +1,8 @@
 # web-byline
 Line-by-line Stream transformer for web
 
+[![npm version][npm-image]][npm-url]
+
 (A ported version of [jahewson/node-byline](https://github.com/jahewson/node-byline) for using with whatwg streams)
 If you want to use byLine in node, then i recomend jahewson package
 
@@ -45,3 +47,6 @@ Unlike other modules (of which there are many), `web-byline` contains no:
  - I expect **you** to write decent code and use `const`, `let`, `classes` and all that and simply include this in your own build process since you are probably going to minify it anyway.
  - So a decient browser won't suffer cuz of other.<br>
  "The only way to truly force the web to embrace modern open standards is to invalidate old technology."
+
+[npm-image]: https://img.shields.io/npm/v/web-byline.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/web-byline
