@@ -4,10 +4,10 @@
 	global[name] = definition()
 })('byLine', () => () => {
 	
-	const lineBuffer = []
 	const decoder = new TextDecoder
 	const encoder = new TextEncoder
 	let lastChunkEndedWithCR
+	let lineBuffer = []
 	
 	function pushBuffer(keep, done, enqueue){
 		// always buffer the last (possibly partial) line
