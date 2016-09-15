@@ -1,0 +1,19 @@
+{
+  "name": "web-byline",
+  "version": "1.0.0",
+  "description": "Line-by-line Stream transformer for web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://jimmywarting@github.com/jimmywarting/web-byline.git"
+  },
+  "author": "Jimmy Wärting",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jimmywarting/web-byline/issues"
+  },
+  "homepage": "https://github.com/jimmywarting/web-byline"
+}
