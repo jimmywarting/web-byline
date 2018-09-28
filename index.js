@@ -53,4 +53,5 @@ const ByLineStream = (() => {
   return ByLineStream  
 })()
 
-module.exports = ByLineStream
+
+if (typeof module !== 'undefined') module.exports = ByLineStream
