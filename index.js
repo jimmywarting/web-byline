@@ -1,52 +1,56 @@
-;((name, definition, global) => {
-	'undefined' != typeof module ? module.exports = definition() :
-	'function' == typeof define && 'object' == typeof define.amd ? define(definition) :
-	global[name] = definition()
-})('byLine', () => () => {
-	
-	const decoder = new TextDecoder
-	const encoder = new TextEncoder
-	let lastChunkEndedWithCR
-	let lineBuffer = []
-	
-	function pushBuffer(keep, done, enqueue){
-		// always buffer the last (possibly partial) line
-		while (lineBuffer.length > keep) {
-			let line = lineBuffer.shift()
-			// skip empty lines
-			if (line.length > 0 )
-				enqueue(encoder.encode(line))
-		}
-		done()
-	}
+const ByLineStream = (() => {
+  class ByLineTransform {
+    constructor() {
+      this._buffer = []
+      this._lastChunkEndedWithCR = false
+    }
 
-	return new TransformStream({
-		start(){},
-		transform(chunk, done, enqueue) {
-			chunk = decoder.decode(chunk, {stream:true})
+    transform(chunk, controller) {
+      // see: http://www.unicode.org/reports/tr18/#Line_Boundaries
+      const lines = chunk.split(/\r\n|[\n\v\f\r\x85\u2028\u2029]/g)
+      const buffer = this._buffer
+      
+      // don't split CRLF which spans chunks
+      if (this._lastChunkEndedWithCR && chunk[0] == '\n') {
+        lines.shift()
+      }
+      
+      if (buffer.length > 0) {
+        buffer[buffer.length - 1] += lines[0]
+        lines.shift()
+      }
+      
+      this._lastChunkEndedWithCR = chunk[chunk.length - 1] == '\r'
+      buffer.push(...lines)
 
-			// see: http://www.unicode.org/reports/tr18/#Line_Boundaries
-			var lines = chunk.split(/\r\n|[\n\v\f\r\x85\u2028\u2029]/g)
+      // always buffer the last (possibly partial) line
+      while (buffer.length > 1) {
+        const line = buffer.shift()
+        // skip empty lines
+        if (line.length) controller.enqueue(line)
+      }
+    }
+    
+    flush(controller) {
+      const buffer = this._buffer
 
-			// don't split CRLF which spans chunks
-			if (lastChunkEndedWithCR && chunk[0] == '\n') {
-				lines.shift()
-			}
+      while (buffer.length) {
+        const line = buffer.shift()
+        // skip empty lines
+        if (line.length) controller.enqueue(line)
+      }
+    }
+  }
 
-			if (lineBuffer.length > 0) {
-				lineBuffer[lineBuffer.length - 1] += lines[0]
-				lines.shift()
-			}
+  class ByLineStream extends TransformStream {
+    constructor() {
+      super(new ByLineTransform)
+    }
+  }
 
-			lastChunkEndedWithCR = chunk[chunk.length - 1] == '\r'
-			lineBuffer = lineBuffer.concat(lines)
-			pushBuffer(1, done, enqueue)
-		},
-		flush(enqueue, close) {
-			// finish the stream
-			lineBuffer[lineBuffer.length-1] += decoder.decode()
-			pushBuffer(0, close, enqueue)
-		}
-	})
-	
-}, this);
+  ByLineStream.prototype[Symbol.toStringTag] = 'ByLineStream'
+
+  return ByLineStream  
+})()
+
+module.exports = ByLineStream
